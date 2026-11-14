@@ -208,6 +208,15 @@ export function InteractiveCourseMap() {
     tileLayerRef.current.setUrl(mapLayer === "satellite" ? satelliteUrl : osmUrl);
   }, [mapLayer]);
 
+  // Invalidate Leaflet map size when tab switches to 'map' so tiles display correctly
+  useEffect(() => {
+    if (activeTab === "map" && mapInstanceRef.current) {
+      setTimeout(() => {
+        mapInstanceRef.current?.invalidateSize();
+      }, 50);
+    }
+  }, [activeTab]);
+
   // Redraw markers when selectedHole or filters change
   useEffect(() => {
     if (!mapInstanceRef.current || !markersLayerRef.current) return;
@@ -315,109 +324,113 @@ export function InteractiveCourseMap() {
       </div>
 
       <div className="course-map-grid">
-        {/* Left column: Visual Area (Map or 3D) */}
+        {/* Left column: Visual Area (Map and 3D both mounted, toggled via display to avoid reload) */}
         <div className="map-visual-pane">
-          {activeTab === "map" ? (
-            <div className="leaflet-wrapper">
-              <div ref={mapContainerRef} className="leaflet-map-root" />
+          <div
+            className="leaflet-wrapper"
+            style={{ display: activeTab === "map" ? "block" : "none", height: "100%", width: "100%" }}
+          >
+            <div ref={mapContainerRef} className="leaflet-map-root" />
 
-              {/* Floating Layer Controls */}
-              <div className="map-overlay-card map-legend-card">
-                <div className="legend-title">Éléments du parcours</div>
-                <label className="legend-item">
-                  <input
-                    type="checkbox"
-                    checked={filters.departs}
-                    onChange={(e) => setFilters({ ...filters, departs: e.target.checked })}
-                  />
-                  <span className="legend-color-dots">
-                    <span className="dot dot-white" />
-                    <span className="dot dot-yellow" />
-                    <span className="dot dot-blue" />
-                    <span className="dot dot-red" />
-                  </span>
-                  <span>Départs</span>
-                </label>
-                <label className="legend-item">
-                  <input
-                    type="checkbox"
-                    checked={filters.greens}
-                    onChange={(e) => setFilters({ ...filters, greens: e.target.checked })}
-                  />
-                  <span className="legend-box box-green" />
-                  <span>Greens</span>
-                </label>
-                <label className="legend-item">
-                  <input
-                    type="checkbox"
-                    checked={filters.fairways}
-                    onChange={(e) => setFilters({ ...filters, fairways: e.target.checked })}
-                  />
-                  <span className="legend-box box-fairway" />
-                  <span>Fairways</span>
-                </label>
-                <label className="legend-item">
-                  <input
-                    type="checkbox"
-                    checked={filters.bunkers}
-                    onChange={(e) => setFilters({ ...filters, bunkers: e.target.checked })}
-                  />
-                  <span className="legend-box box-bunker" />
-                  <span>Bunkers</span>
-                </label>
-                <label className="legend-item">
-                  <input
-                    type="checkbox"
-                    checked={filters.eau}
-                    onChange={(e) => setFilters({ ...filters, eau: e.target.checked })}
-                  />
-                  <span className="legend-box box-water" />
-                  <span>Eau</span>
-                </label>
-                <label className="legend-item">
-                  <input
-                    type="checkbox"
-                    checked={filters.autres}
-                    onChange={(e) => setFilters({ ...filters, autres: e.target.checked })}
-                  />
-                  <span className="legend-box box-other" />
-                  <span>Autres</span>
-                </label>
-              </div>
+            {/* Floating Layer Controls */}
+            <div className="map-overlay-card map-legend-card">
+              <div className="legend-title">Éléments du parcours</div>
+              <label className="legend-item">
+                <input
+                  type="checkbox"
+                  checked={filters.departs}
+                  onChange={(e) => setFilters({ ...filters, departs: e.target.checked })}
+                />
+                <span className="legend-color-dots">
+                  <span className="dot dot-white" />
+                  <span className="dot dot-yellow" />
+                  <span className="dot dot-blue" />
+                  <span className="dot dot-red" />
+                </span>
+                <span>Départs</span>
+              </label>
+              <label className="legend-item">
+                <input
+                  type="checkbox"
+                  checked={filters.greens}
+                  onChange={(e) => setFilters({ ...filters, greens: e.target.checked })}
+                />
+                <span className="legend-box box-green" />
+                <span>Greens</span>
+              </label>
+              <label className="legend-item">
+                <input
+                  type="checkbox"
+                  checked={filters.fairways}
+                  onChange={(e) => setFilters({ ...filters, fairways: e.target.checked })}
+                />
+                <span className="legend-box box-fairway" />
+                <span>Fairways</span>
+              </label>
+              <label className="legend-item">
+                <input
+                  type="checkbox"
+                  checked={filters.bunkers}
+                  onChange={(e) => setFilters({ ...filters, bunkers: e.target.checked })}
+                />
+                <span className="legend-box box-bunker" />
+                <span>Bunkers</span>
+              </label>
+              <label className="legend-item">
+                <input
+                  type="checkbox"
+                  checked={filters.eau}
+                  onChange={(e) => setFilters({ ...filters, eau: e.target.checked })}
+                />
+                <span className="legend-box box-water" />
+                <span>Eau</span>
+              </label>
+              <label className="legend-item">
+                <input
+                  type="checkbox"
+                  checked={filters.autres}
+                  onChange={(e) => setFilters({ ...filters, autres: e.target.checked })}
+                />
+                <span className="legend-box box-other" />
+                <span>Autres</span>
+              </label>
+            </div>
 
-              {/* Floating Tile Switcher */}
-              <div className="map-overlay-card map-tiles-card">
-                <label className="tile-radio-item">
-                  <input
-                    type="radio"
-                    name="mapLayer"
-                    value="satellite"
-                    checked={mapLayer === "satellite"}
-                    onChange={() => setMapLayer("satellite")}
-                  />
-                  <span>Satellite</span>
-                </label>
-                <label className="tile-radio-item">
-                  <input
-                    type="radio"
-                    name="mapLayer"
-                    value="osm"
-                    checked={mapLayer === "osm"}
-                    onChange={() => setMapLayer("osm")}
-                  />
-                  <span>Plan OSM</span>
-                </label>
-              </div>
+            {/* Floating Tile Switcher */}
+            <div className="map-overlay-card map-tiles-card">
+              <label className="tile-radio-item">
+                <input
+                  type="radio"
+                  name="mapLayer"
+                  value="satellite"
+                  checked={mapLayer === "satellite"}
+                  onChange={() => setMapLayer("satellite")}
+                />
+                <span>Satellite</span>
+              </label>
+              <label className="tile-radio-item">
+                <input
+                  type="radio"
+                  name="mapLayer"
+                  value="osm"
+                  checked={mapLayer === "osm"}
+                  onChange={() => setMapLayer("osm")}
+                />
+                <span>Plan OSM</span>
+              </label>
             </div>
-          ) : (
-            <div className="embedded-3d-wrapper">
-              <Course3DViewer
-                model={model3D}
-                selectedHole={selectedHole}
-                onAnnotationSelect={(num) => setSelectedHole(num)}
-              />
-            </div>
-          )}
+          </div>
+
+          <div
+            className="embedded-3d-wrapper"
+            style={{ display: activeTab === "3d" ? "block" : "none", height: "100%", width: "100%" }}
+          >
+            <Course3DViewer
+              model={model3D}
+              selectedHole={selectedHole}
+              onAnnotationSelect={(num) => setSelectedHole(num)}
+            />
+          </div>
         </div>
 
         {/* Right column: Hole Selector & Details */}
