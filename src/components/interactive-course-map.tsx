@@ -9,26 +9,28 @@ import { getCourseModel } from "@/lib/virtual-tour";
 import Link from "next/link";
 
 // Official coordinates for the 18 holes of Président Golf Club (adjacent to Hôtel Président, Yamoussoukro)
+// Anchor: Clubhouse/Pool (Roger Taillibert bldg) = 6.7971, -5.2533 (SW corner, near road)
 // Bounding box: Lat 6.7912 - 6.8005, Lon -5.2539 - -5.2428
+// Layout calibrated from 3D model bird's-eye: holes radiate NE from clubhouse in a loop
 const HOLE_COORDS: Record<number, { lat: number; lng: number; greenLat: number; greenLng: number }> = {
-  1:  { lat: 6.7972, lng: -5.2475, greenLat: 6.7995, greenLng: -5.2465 },
-  2:  { lat: 6.7998, lng: -5.2462, greenLat: 6.7990, greenLng: -5.2448 },
-  3:  { lat: 6.7988, lng: -5.2445, greenLat: 6.7962, greenLng: -5.2440 },
-  4:  { lat: 6.7958, lng: -5.2438, greenLat: 6.7935, greenLng: -5.2445 },
-  5:  { lat: 6.7932, lng: -5.2448, greenLat: 6.7920, greenLng: -5.2470 },
-  6:  { lat: 6.7922, lng: -5.2475, greenLat: 6.7930, greenLng: -5.2490 },
-  7:  { lat: 6.7932, lng: -5.2495, greenLat: 6.7955, greenLng: -5.2510 },
-  8:  { lat: 6.7958, lng: -5.2512, greenLat: 6.7972, greenLng: -5.2505 },
-  9:  { lat: 6.7970, lng: -5.2500, greenLat: 6.7968, greenLng: -5.2482 },
-  10: { lat: 6.7965, lng: -5.2485, greenLat: 6.7940, greenLng: -5.2470 },
-  11: { lat: 6.7938, lng: -5.2468, greenLat: 6.7925, greenLng: -5.2450 },
-  12: { lat: 6.7922, lng: -5.2448, greenLat: 6.7935, greenLng: -5.2435 }, // Green au bord du lac
-  13: { lat: 6.7938, lng: -5.2432, greenLat: 6.7965, greenLng: -5.2438 },
-  14: { lat: 6.7968, lng: -5.2440, greenLat: 6.7990, greenLng: -5.2455 },
-  15: { lat: 6.7992, lng: -5.2458, greenLat: 6.7980, greenLng: -5.2480 },
-  16: { lat: 6.7978, lng: -5.2485, greenLat: 6.7960, greenLng: -5.2515 },
-  17: { lat: 6.7958, lng: -5.2518, greenLat: 6.7940, greenLng: -5.2530 },
-  18: { lat: 6.7938, lng: -5.2525, greenLat: 6.7968, greenLng: -5.2480 }, // Retour au clubhouse
+  1:  { lat: 6.7976, lng: -5.2528, greenLat: 6.7995, greenLng: -5.2518 }, // Start near clubhouse → N
+  2:  { lat: 6.7998, lng: -5.2525, greenLat: 6.8002, greenLng: -5.2510 }, // Upper-left
+  3:  { lat: 6.8002, lng: -5.2508, greenLat: 6.7998, greenLng: -5.2492 }, // Upper-left → E
+  4:  { lat: 6.7996, lng: -5.2490, greenLat: 6.7984, greenLng: -5.2478 }, // Upper-center-left
+  5:  { lat: 6.7988, lng: -5.2518, greenLat: 6.7995, greenLng: -5.2508 }, // Left side returning
+  6:  { lat: 6.7956, lng: -5.2522, greenLat: 6.7948, greenLng: -5.2508 }, // Left-middle
+  7:  { lat: 6.7946, lng: -5.2506, greenLat: 6.7948, greenLng: -5.2490 }, // Center-left
+  8:  { lat: 6.7962, lng: -5.2492, greenLat: 6.7982, greenLng: -5.2490 }, // Center going N
+  9:  { lat: 6.7984, lng: -5.2478, greenLat: 6.7976, greenLng: -5.2458 }, // Upper-center → E
+  10: { lat: 6.7968, lng: -5.2522, greenLat: 6.7958, greenLng: -5.2508 }, // Near clubhouse (return side)
+  11: { lat: 6.7956, lng: -5.2504, greenLat: 6.7944, greenLng: -5.2486 }, // Center
+  12: { lat: 6.7940, lng: -5.2480, greenLat: 6.7930, greenLng: -5.2462 }, // Center → lake area
+  13: { lat: 6.7926, lng: -5.2455, greenLat: 6.7932, greenLng: -5.2440 }, // Near lake / right
+  14: { lat: 6.7936, lng: -5.2436, greenLat: 6.7960, greenLng: -5.2440 }, // Right side → N
+  15: { lat: 6.7963, lng: -5.2438, greenLat: 6.7984, greenLng: -5.2448 }, // Upper-right
+  16: { lat: 6.7986, lng: -5.2452, greenLat: 6.7986, greenLng: -5.2468 }, // Upper-right → W
+  17: { lat: 6.7980, lng: -5.2470, greenLat: 6.7974, greenLng: -5.2486 }, // Center-right → W
+  18: { lat: 6.7972, lng: -5.2490, greenLat: 6.7971, greenLng: -5.2525 }, // Return to clubhouse
 };
 
 function calculateDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number) {
@@ -123,13 +125,26 @@ export function InteractiveCourseMap() {
     if (currentFilters.eau) {
       const waterIcon = LInstance.divIcon({
         className: "custom-golf-marker",
-        html: `<div class="marker-water">💧 Lac</div>`,
-        iconSize: [44, 20],
+        html: `<div class="marker-water">💧 Lac aux Crocodiles</div>`,
+        iconSize: [120, 24],
       });
-      const waterMarker = LInstance.marker([6.7928, -5.2440], { icon: waterIcon }).bindPopup(
-        "<strong>Trou 12 — Obstacle d'Eau</strong><br/>Obstacle d'eau frontal avec dropping zone obligatoire."
+      const waterMarker = LInstance.marker([6.7932, -5.2448], { icon: waterIcon }).bindPopup(
+        "<strong>Obstacle d'Eau Principal (Lac)</strong><br/>Obstacle d'eau frontal avec dropping zone officielle."
       );
       layer.addLayer(waterMarker);
+    }
+
+    if (currentFilters.autres) {
+      const clubIcon = LInstance.divIcon({
+        className: "custom-golf-marker",
+        html: `<div class="marker-tee marker-active-tee" style="background:#0a271d;border:2px solid #c89f53;color:#c89f53;font-weight:700;width:auto;padding:2px 8px;border-radius:12px;font-size:11px;">🏛️ Club-House / Piscine</div>`,
+        iconSize: [140, 24],
+        iconAnchor: [70, 12],
+      });
+      const clubMarker = LInstance.marker([6.7971, -5.2533], { icon: clubIcon }).bindPopup(
+        "<strong>Club-House du Président Golf</strong><br/>Bâtiment Roger Taillibert, Pro Shop, Piscine & Lounge (Point 19 sur la maquette)."
+      );
+      layer.addLayer(clubMarker);
     }
 
     const target = HOLE_COORDS[holeNum];
