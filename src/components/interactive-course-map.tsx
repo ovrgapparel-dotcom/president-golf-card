@@ -8,26 +8,27 @@ import { Course3DViewer } from "@/components/course-3d-viewer";
 import { getCourseModel } from "@/lib/virtual-tour";
 import Link from "next/link";
 
-// Approximate coordinates for the 18 holes around President Golf de Yamoussoukro (adjacent to the Lacs / Basilique)
+// Official coordinates for the 18 holes of Président Golf Club (adjacent to Hôtel Président, Yamoussoukro)
+// Bounding box: Lat 6.7912 - 6.8005, Lon -5.2539 - -5.2428
 const HOLE_COORDS: Record<number, { lat: number; lng: number; greenLat: number; greenLng: number }> = {
-  1:  { lat: 6.8252, lng: -5.2655, greenLat: 6.8285, greenLng: -5.2642 },
-  2:  { lat: 6.8288, lng: -5.2640, greenLat: 6.8298, greenLng: -5.2638 },
-  3:  { lat: 6.8302, lng: -5.2635, greenLat: 6.8335, greenLng: -5.2628 },
-  4:  { lat: 6.8338, lng: -5.2625, greenLat: 6.8358, greenLng: -5.2618 },
-  5:  { lat: 6.8360, lng: -5.2615, greenLat: 6.8340, greenLng: -5.2598 },
-  6:  { lat: 6.8335, lng: -5.2595, greenLat: 6.8322, greenLng: -5.2588 },
-  7:  { lat: 6.8318, lng: -5.2585, greenLat: 6.8290, greenLng: -5.2575 },
-  8:  { lat: 6.8288, lng: -5.2572, greenLat: 6.8265, greenLng: -5.2570 },
-  9:  { lat: 6.8262, lng: -5.2572, greenLat: 6.8248, greenLng: -5.2630 },
-  10: { lat: 6.8245, lng: -5.2635, greenLat: 6.8220, greenLng: -5.2605 },
-  11: { lat: 6.8218, lng: -5.2602, greenLat: 6.8195, greenLng: -5.2590 },
-  12: { lat: 6.8192, lng: -5.2588, greenLat: 6.8180, greenLng: -5.2575 }, // Island green lake
-  13: { lat: 6.8182, lng: -5.2572, greenLat: 6.8205, greenLng: -5.2558 },
-  14: { lat: 6.8208, lng: -5.2555, greenLat: 6.8240, greenLng: -5.2548 },
-  15: { lat: 6.8242, lng: -5.2545, greenLat: 6.8265, greenLng: -5.2555 },
-  16: { lat: 6.8268, lng: -5.2558, greenLat: 6.8295, greenLng: -5.2565 },
-  17: { lat: 6.8298, lng: -5.2568, greenLat: 6.8308, greenLng: -5.2575 },
-  18: { lat: 6.8310, lng: -5.2578, greenLat: 6.8260, greenLng: -5.2645 }, // Return to club house
+  1:  { lat: 6.7972, lng: -5.2475, greenLat: 6.7995, greenLng: -5.2465 },
+  2:  { lat: 6.7998, lng: -5.2462, greenLat: 6.7990, greenLng: -5.2448 },
+  3:  { lat: 6.7988, lng: -5.2445, greenLat: 6.7962, greenLng: -5.2440 },
+  4:  { lat: 6.7958, lng: -5.2438, greenLat: 6.7935, greenLng: -5.2445 },
+  5:  { lat: 6.7932, lng: -5.2448, greenLat: 6.7920, greenLng: -5.2470 },
+  6:  { lat: 6.7922, lng: -5.2475, greenLat: 6.7930, greenLng: -5.2490 },
+  7:  { lat: 6.7932, lng: -5.2495, greenLat: 6.7955, greenLng: -5.2510 },
+  8:  { lat: 6.7958, lng: -5.2512, greenLat: 6.7972, greenLng: -5.2505 },
+  9:  { lat: 6.7970, lng: -5.2500, greenLat: 6.7968, greenLng: -5.2482 },
+  10: { lat: 6.7965, lng: -5.2485, greenLat: 6.7940, greenLng: -5.2470 },
+  11: { lat: 6.7938, lng: -5.2468, greenLat: 6.7925, greenLng: -5.2450 },
+  12: { lat: 6.7922, lng: -5.2448, greenLat: 6.7935, greenLng: -5.2435 }, // Green au bord du lac
+  13: { lat: 6.7938, lng: -5.2432, greenLat: 6.7965, greenLng: -5.2438 },
+  14: { lat: 6.7968, lng: -5.2440, greenLat: 6.7990, greenLng: -5.2455 },
+  15: { lat: 6.7992, lng: -5.2458, greenLat: 6.7980, greenLng: -5.2480 },
+  16: { lat: 6.7978, lng: -5.2485, greenLat: 6.7960, greenLng: -5.2515 },
+  17: { lat: 6.7958, lng: -5.2518, greenLat: 6.7940, greenLng: -5.2530 },
+  18: { lat: 6.7938, lng: -5.2525, greenLat: 6.7968, greenLng: -5.2480 }, // Retour au clubhouse
 };
 
 function calculateDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number) {
@@ -45,7 +46,7 @@ function calculateDistanceMeters(lat1: number, lon1: number, lat2: number, lon2:
 
 export function InteractiveCourseMap() {
   const [selectedHole, setSelectedHole] = useState<number>(1);
-  const [activeTab, setActiveTab] = useState<"map" | "3d">("map");
+  const [activeTab, setActiveTab] = useState<"3d" | "map">("3d");
   const [mapLayer, setMapLayer] = useState<"satellite" | "osm">("satellite");
   const [filters, setFilters] = useState({
     departs: true,
@@ -125,8 +126,8 @@ export function InteractiveCourseMap() {
         html: `<div class="marker-water">💧 Lac</div>`,
         iconSize: [44, 20],
       });
-      const waterMarker = LInstance.marker([6.8185, -5.2582], { icon: waterIcon }).bindPopup(
-        "<strong>Trou 12 — Green en Île</strong><br/>Obstacle d'eau frontal avec dropping zone obligatoire."
+      const waterMarker = LInstance.marker([6.7928, -5.2440], { icon: waterIcon }).bindPopup(
+        "<strong>Trou 12 — Obstacle d'Eau</strong><br/>Obstacle d'eau frontal avec dropping zone obligatoire."
       );
       layer.addLayer(waterMarker);
     }
@@ -152,8 +153,8 @@ export function InteractiveCourseMap() {
 
       if (!mapInstanceRef.current && mapContainerRef.current) {
         const map = L.map(mapContainerRef.current, {
-          center: [6.827, -5.261],
-          zoom: 15,
+          center: [6.7958, -5.2483],
+          zoom: 16,
           zoomControl: false,
         });
 
