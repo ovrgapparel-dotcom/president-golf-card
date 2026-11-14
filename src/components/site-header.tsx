@@ -25,6 +25,15 @@ export function SiteHeader() {
           <Link href="/round/new" className="nav-link">Nouvelle partie</Link>
           <Link href="/course" className="nav-link">Parcours 3D</Link>
           <Link href="/round" className="nav-link">Mes parties</Link>
+          <a
+            href="/guide-utilisateur-president-golf.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-link"
+            style={{ color: "#c89f53", fontWeight: 600 }}
+          >
+            📖 Guide PDF
+          </a>
         </nav>
       </div>
     </header>

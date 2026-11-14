@@ -396,7 +396,11 @@ export function InteractiveCourseMap() {
             </div>
           ) : (
             <div className="embedded-3d-wrapper">
-              <Course3DViewer model={model3D} />
+              <Course3DViewer
+                model={model3D}
+                selectedHole={selectedHole}
+                onAnnotationSelect={(num) => setSelectedHole(num)}
+              />
             </div>
           )}
         </div>

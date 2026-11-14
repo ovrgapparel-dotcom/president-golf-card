@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Manuel d'Utilisation - President Golf de Yamoussoukro</title>
+<style>
+  @page { size: A4; margin: 15mm; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #1c2e26; line-height: 1.5; font-size: 13px; max-width: 800px; margin: 0 auto; padding: 20px; }
+  h1, h2, h3 { color: #0a271d; margin-top: 0; }
+  h1 { font-size: 24px; border-bottom: 2px solid #c89f53; padding-bottom: 8px; margin-bottom: 16px; }
+  h2 { font-size: 18px; color: #0a271d; margin-top: 24px; border-left: 4px solid #c89f53; padding-left: 8px; }
+  .badge { display: inline-block; padding: 4px 10px; background: #c89f53; color: white; border-radius: 4px; font-weight: bold; font-size: 11px; }
+  .box { background: #f7f9f8; border: 1px solid #dce4e0; border-radius: 8px; padding: 14px; margin-bottom: 16px; }
+  .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .table th, .table td { border: 1px solid #dce4e0; padding: 8px; text-align: left; }
+  .table th { background: #0a271d; color: white; }
+  .step-num { display: inline-block; width: 22px; height: 22px; background: #0a271d; color: #c89f53; border-radius: 50%; text-align: center; line-height: 22px; font-weight: bold; margin-right: 6px; }
+  .tip { background: #fdfaf3; border-left: 4px solid #c89f53; padding: 10px; margin: 12px 0; }
+  .print-btn { background: #0a271d; color: #c89f53; border: 1px solid #c89f53; padding: 8px 16px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-bottom: 20px; }
+  @media print {
+    .print-btn { display: none; }
+  }
+</style>
+</head>
+<body>
+  <button class="print-btn" onclick="window.print()">📥 Imprimer / Télécharger en PDF</button>
+
+  <h1>PRESIDENT GOLF DE YAMOUSSOUKRO</h1>
+  <p><strong>Manuel d'utilisation officiel de l'application web & mobile</strong> · <span class="badge">Version 1.0</span></p>
+
+  <div class="box">
+    <strong>Accès direct :</strong> <a href="https://president-golf-scorecard.vercel.app">https://president-golf-scorecard.vercel.app</a><br/>
+    <strong>Application :</strong> PWA (Progressive Web App) fonctionnant sur smartphone, tablette et ordinateur avec sauvegarde hors-ligne.
+  </div>
+
+  <h2>1. Accès & Installation sur Smartphone (PWA)</h2>
+  <p>L'application s'installe directement sur votre écran d'accueil sans passer par les stores d'applications :</p>
+  <ul>
+    <li><span class="step-num">1</span> <strong>Sur iPhone (Safari) :</strong> Ouvrez le lien dans Safari, appuyez sur le bouton <em>Partager</em> (icône avec flèche vers le haut), puis sélectionnez <strong>"Sur l'écran d'accueil"</strong>.</li>
+    <li><span class="step-num">2</span> <strong>Sur Android (Chrome) :</strong> Ouvrez le lien dans Chrome, appuyez sur le menu (trois points en haut à droite), puis choisissez <strong>"Installer l'application"</strong> ou "Ajouter à l'écran d'accueil".</li>
+  </ul>
+
+  <h2>2. Navigation & Maquette 3D Interactive des 18 Trous</h2>
+  <p>Dès la page d'accueil, la maquette numérique 3D haute définition du parcours est accessible directement au centre de l'écran :</p>
+  <ul>
+    <li><strong>Sélecteur de trou :</strong> Utilisez les boutons numérotés <strong>1 à 18</strong> ou les boutons <em>Préc.</em> / <em>Suiv.</em>.</li>
+    <li><strong>Caméra dynamique :</strong> La sélection d'un trou déclenche instantanément un survol caméra 3D vers le départ et le green du trou correspondant.</li>
+    <li><strong>Contrôles de manipulation 3D :</strong>
+      <ul>
+        <li><em>Pivoter :</em> Clic gauche maintenu ou glissement avec un doigt.</li>
+        <li><em>Zoomer :</em> Molette de souris ou pincement à deux doigts.</li>
+        <li><em>Déplacer :</em> Clic droit maintenu ou glissement à deux doigts.</li>
+        <li><em>Plein écran :</em> Bouton ⤢ Plein écran pour une immersion complète sur grand écran.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h2>3. Démarrer & Noter une Partie</h2>
+  <ol>
+    <li>Cliquez sur <strong>"Démarrer une partie"</strong> depuis la page d'accueil ou la barre de navigation.</li>
+    <li>Sélectionnez votre repère de départ officiel :
+      <table class="table">
+        <tr><th>Repère</th><th>Distance totale</th><th>Aller</th><th>Retour</th></tr>
+        <tr><td><strong>Blancs (Championnat)</strong></td><td>6 015 m</td><td>3 103 m</td><td>2 912 m</td></tr>
+        <tr><td><strong>Jaunes (Messieurs)</strong></td><td>5 680 m</td><td>2 944 m</td><td>2 736 m</td></tr>
+        <tr><td><strong>Bleus (Dames 1ère Série)</strong></td><td>5 221 m</td><td>2 767 m</td><td>2 454 m</td></tr>
+        <tr><td><strong>Rouges (Dames 2ème Série)</strong></td><td>5 107 m</td><td>2 690 m</td><td>2 417 m</td></tr>
+      </table>
+    </li>
+    <li>Ajoutez jusqu'à 4 joueurs par carte de score avec leurs noms respectifs.</li>
+    <li>Saisie trou par trou : utilisez les boutons <strong>+</strong> et <strong>-</strong> pour enregistrer les scores. Les pastilles de performance (Eagle, Birdie, Par, Bogey) se calculent automatiquement.</li>
+    <li>À la fin du 18ème trou, validez votre partie pour générer le <strong>certificat officiel de partie</strong> et le récapitulatif complet.</li>
+  </ol>
+
+  <div class="tip">
+    <strong>Mode Hors-Ligne (Offline) :</strong> Vos scores sont enregistrés en temps réel sur la mémoire locale de votre appareil. Dès que la connexion Internet est rétablie, les parties se synchronisent automatiquement avec le serveur Supabase.
+  </div>
+
+  <h2>4. Contact & Support du Club</h2>
+  <p><strong>President Golf de Yamoussoukro</strong> · BP 1024 Yamoussoukro, Côte d'Ivoire<br/>
+  Gestion SODERTOUR LACS · Téléphone : +225 30 64 64 64 / 77 18 42 78</p>
+</body>
+</html>
