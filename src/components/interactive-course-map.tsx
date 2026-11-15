@@ -8,48 +8,29 @@ import { Course3DViewer } from "@/components/course-3d-viewer";
 import { getCourseModel } from "@/lib/virtual-tour";
 import Link from "next/link";
 
-// Calibrated coordinates matching the 3D aerial model orientation:
-// Orientation: Clubhouse (19) is in SW corner (6.7971, -5.2533).
-// The main crocodile lake is in the South-East (6.7928, -5.2440).
-// Front 9 (Aller):
-//   1:  Tee near Clubhouse (6.7974, -5.2530) -> Fairway runs North along western boundary -> Green 1 (6.7996, -5.2526)
-//   2:  Tee 2 (6.7997, -5.2524) -> Green 2 (6.8001, -5.2514)
-//   3:  Tee 3 (6.8000, -5.2510) -> Green 3 (6.7996, -5.2498)
-//   4:  Tee 4 (6.7994, -5.2494) -> Green 4 (6.7984, -5.2482)
-//   5:  Tee 5 (6.7986, -5.2520) -> Green 5 (6.7998, -5.2518)
-//   6:  Tee 6 (6.7964, -5.2526) -> Green 6 (6.7952, -5.2512)
-//   7:  Tee 7 (6.7950, -5.2510) -> Green 7 (6.7952, -5.2494)
-//   8:  Tee 8 (6.7960, -5.2496) -> Green 8 (6.7980, -5.2496)
-//   9:  Tee 9 (6.7982, -5.2480) -> Green 9 (6.7975, -5.2460)
-// Back 9 (Retour):
-//   10: Tee near Clubhouse (6.7968, -5.2530) -> runs East-SE -> Green 10 (6.7956, -5.2505)
-//   11: Tee 11 (6.7954, -5.2500) -> runs toward Lake -> Green 11 (6.7942, -5.2468)
-//   12: Tee 12 (6.7938, -5.2460) -> Signature water hole -> Green 12 (6.7930, -5.2444)
-//   13: Tee 13 (6.7925, -5.2442) -> Lake edge -> Green 13 (6.7935, -5.2435)
-//   14: Tee 14 (6.7938, -5.2434) -> runs North along East boundary -> Green 14 (6.7964, -5.2438)
-//   15: Tee 15 (6.7968, -5.2438) -> Upper East corner -> Green 15 (6.7986, -5.2446)
-//   16: Tee 16 (6.7986, -5.2452) -> runs West -> Green 16 (6.7985, -5.2470)
-//   17: Tee 17 (6.7982, -5.2474) -> runs SW -> Green 17 (6.7975, -5.2490)
-//   18: Tee 18 (6.7972, -5.2494) -> runs West finishing at Clubhouse -> Green 18 (6.7970, -5.2526)
+// Calibrated coordinates strictly inside the golf course tree-lined boundaries:
+// Eastern boundary of golf course is delimited by the main avenue (lng ~ -5.2470).
+// All holes stay west of longitude -5.2470 to avoid crossing into residential neighborhood.
+// Main Lake (Lac aux Crocodiles) sits between -5.2490 and -5.2468, and lat 6.7915 to 6.7940.
 const HOLE_COORDS: Record<number, { lat: number; lng: number; greenLat: number; greenLng: number }> = {
-  1:  { lat: 6.7975, lng: -5.2530, greenLat: 6.7997, greenLng: -5.2526 },
-  2:  { lat: 6.7998, lng: -5.2523, greenLat: 6.8002, greenLng: -5.2513 },
-  3:  { lat: 6.8001, lng: -5.2509, greenLat: 6.7997, greenLng: -5.2497 },
-  4:  { lat: 6.7994, lng: -5.2493, greenLat: 6.7983, greenLng: -5.2480 },
-  5:  { lat: 6.7986, lng: -5.2520, greenLat: 6.7999, greenLng: -5.2517 },
-  6:  { lat: 6.7963, lng: -5.2526, greenLat: 6.7951, greenLng: -5.2512 },
-  7:  { lat: 6.7949, lng: -5.2510, greenLat: 6.7951, greenLng: -5.2493 },
-  8:  { lat: 6.7959, lng: -5.2495, greenLat: 6.7981, greenLng: -5.2495 },
-  9:  { lat: 6.7983, lng: -5.2479, greenLat: 6.7974, greenLng: -5.2458 },
-  10: { lat: 6.7968, lng: -5.2530, greenLat: 6.7955, greenLng: -5.2504 },
-  11: { lat: 6.7953, lng: -5.2499, greenLat: 6.7941, greenLng: -5.2467 },
-  12: { lat: 6.7937, lng: -5.2459, greenLat: 6.7929, greenLng: -5.2443 },
-  13: { lat: 6.7924, lng: -5.2441, greenLat: 6.7934, greenLng: -5.2433 },
-  14: { lat: 6.7937, lng: -5.2432, greenLat: 6.7965, greenLng: -5.2437 },
-  15: { lat: 6.7969, lng: -5.2437, greenLat: 6.7987, greenLng: -5.2445 },
-  16: { lat: 6.7987, lng: -5.2451, greenLat: 6.7986, greenLng: -5.2469 },
-  17: { lat: 6.7983, lng: -5.2473, greenLat: 6.7974, greenLng: -5.2489 },
-  18: { lat: 6.7973, lng: -5.2493, greenLat: 6.7970, greenLng: -5.2526 },
+  1:  { lat: 6.7975, lng: -5.2530, greenLat: 6.7997, greenLng: -5.2526 }, // Near Clubhouse -> North
+  2:  { lat: 6.7998, lng: -5.2523, greenLat: 6.8002, greenLng: -5.2513 }, // NW corner
+  3:  { lat: 6.8001, lng: -5.2509, greenLat: 6.7997, greenLng: -5.2497 }, // North loop
+  4:  { lat: 6.7994, lng: -5.2493, greenLat: 6.7983, greenLng: -5.2480 }, // North-central
+  5:  { lat: 6.7986, lng: -5.2520, greenLat: 6.7999, greenLng: -5.2517 }, // Returning west
+  6:  { lat: 6.7963, lng: -5.2526, greenLat: 6.7951, greenLng: -5.2512 }, // South-west of clubhouse
+  7:  { lat: 6.7949, lng: -5.2510, greenLat: 6.7951, greenLng: -5.2493 }, // Lower fairway
+  8:  { lat: 6.7959, lng: -5.2495, greenLat: 6.7981, greenLng: -5.2495 }, // Central heading North
+  9:  { lat: 6.7980, lng: -5.2486, greenLat: 6.7972, greenLng: -5.2474 }, // Inside course, west of avenue
+  10: { lat: 6.7968, lng: -5.2530, greenLat: 6.7955, greenLng: -5.2504 }, // Near Clubhouse -> East
+  11: { lat: 6.7953, lng: -5.2499, greenLat: 6.7941, greenLng: -5.2476 }, // Toward lake
+  12: { lat: 6.7937, lng: -5.2475, greenLat: 6.7928, greenLng: -5.2472 }, // West side of lake
+  13: { lat: 6.7924, lng: -5.2470, greenLat: 6.7935, greenLng: -5.2473 }, // Southern tip of lake, inside course
+  14: { lat: 6.7937, lng: -5.2472, greenLat: 6.7962, greenLng: -5.2473 }, // East tree line inside course
+  15: { lat: 6.7966, lng: -5.2474, greenLat: 6.7985, greenLng: -5.2476 }, // Upper East inside course boundary
+  16: { lat: 6.7987, lng: -5.2476, greenLat: 6.7986, greenLng: -5.2486 }, // Upper course heading West
+  17: { lat: 6.7983, lng: -5.2484, greenLat: 6.7974, greenLng: -5.2494 }, // Center heading SW
+  18: { lat: 6.7973, lng: -5.2495, greenLat: 6.7970, greenLng: -5.2526 }, // Finishing at Clubhouse
 };
 
 function calculateDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number) {
