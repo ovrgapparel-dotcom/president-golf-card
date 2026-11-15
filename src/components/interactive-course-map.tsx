@@ -8,29 +8,48 @@ import { Course3DViewer } from "@/components/course-3d-viewer";
 import { getCourseModel } from "@/lib/virtual-tour";
 import Link from "next/link";
 
-// Official coordinates for the 18 holes of Président Golf Club (adjacent to Hôtel Président, Yamoussoukro)
-// Anchor: Clubhouse/Pool (Roger Taillibert bldg) = 6.7971, -5.2533 (SW corner, near road)
-// Bounding box: Lat 6.7912 - 6.8005, Lon -5.2539 - -5.2428
-// Layout calibrated from 3D model bird's-eye: holes radiate NE from clubhouse in a loop
+// Calibrated coordinates matching the 3D aerial model orientation:
+// Orientation: Clubhouse (19) is in SW corner (6.7971, -5.2533).
+// The main crocodile lake is in the South-East (6.7928, -5.2440).
+// Front 9 (Aller):
+//   1:  Tee near Clubhouse (6.7974, -5.2530) -> Fairway runs North along western boundary -> Green 1 (6.7996, -5.2526)
+//   2:  Tee 2 (6.7997, -5.2524) -> Green 2 (6.8001, -5.2514)
+//   3:  Tee 3 (6.8000, -5.2510) -> Green 3 (6.7996, -5.2498)
+//   4:  Tee 4 (6.7994, -5.2494) -> Green 4 (6.7984, -5.2482)
+//   5:  Tee 5 (6.7986, -5.2520) -> Green 5 (6.7998, -5.2518)
+//   6:  Tee 6 (6.7964, -5.2526) -> Green 6 (6.7952, -5.2512)
+//   7:  Tee 7 (6.7950, -5.2510) -> Green 7 (6.7952, -5.2494)
+//   8:  Tee 8 (6.7960, -5.2496) -> Green 8 (6.7980, -5.2496)
+//   9:  Tee 9 (6.7982, -5.2480) -> Green 9 (6.7975, -5.2460)
+// Back 9 (Retour):
+//   10: Tee near Clubhouse (6.7968, -5.2530) -> runs East-SE -> Green 10 (6.7956, -5.2505)
+//   11: Tee 11 (6.7954, -5.2500) -> runs toward Lake -> Green 11 (6.7942, -5.2468)
+//   12: Tee 12 (6.7938, -5.2460) -> Signature water hole -> Green 12 (6.7930, -5.2444)
+//   13: Tee 13 (6.7925, -5.2442) -> Lake edge -> Green 13 (6.7935, -5.2435)
+//   14: Tee 14 (6.7938, -5.2434) -> runs North along East boundary -> Green 14 (6.7964, -5.2438)
+//   15: Tee 15 (6.7968, -5.2438) -> Upper East corner -> Green 15 (6.7986, -5.2446)
+//   16: Tee 16 (6.7986, -5.2452) -> runs West -> Green 16 (6.7985, -5.2470)
+//   17: Tee 17 (6.7982, -5.2474) -> runs SW -> Green 17 (6.7975, -5.2490)
+//   18: Tee 18 (6.7972, -5.2494) -> runs West finishing at Clubhouse -> Green 18 (6.7970, -5.2526)
 const HOLE_COORDS: Record<number, { lat: number; lng: number; greenLat: number; greenLng: number }> = {
-  1:  { lat: 6.7976, lng: -5.2528, greenLat: 6.7995, greenLng: -5.2518 }, // Start near clubhouse → N
-  2:  { lat: 6.7998, lng: -5.2525, greenLat: 6.8002, greenLng: -5.2510 }, // Upper-left
-  3:  { lat: 6.8002, lng: -5.2508, greenLat: 6.7998, greenLng: -5.2492 }, // Upper-left → E
-  4:  { lat: 6.7996, lng: -5.2490, greenLat: 6.7984, greenLng: -5.2478 }, // Upper-center-left
-  5:  { lat: 6.7988, lng: -5.2518, greenLat: 6.7995, greenLng: -5.2508 }, // Left side returning
-  6:  { lat: 6.7956, lng: -5.2522, greenLat: 6.7948, greenLng: -5.2508 }, // Left-middle
-  7:  { lat: 6.7946, lng: -5.2506, greenLat: 6.7948, greenLng: -5.2490 }, // Center-left
-  8:  { lat: 6.7962, lng: -5.2492, greenLat: 6.7982, greenLng: -5.2490 }, // Center going N
-  9:  { lat: 6.7984, lng: -5.2478, greenLat: 6.7976, greenLng: -5.2458 }, // Upper-center → E
-  10: { lat: 6.7968, lng: -5.2522, greenLat: 6.7958, greenLng: -5.2508 }, // Near clubhouse (return side)
-  11: { lat: 6.7956, lng: -5.2504, greenLat: 6.7944, greenLng: -5.2486 }, // Center
-  12: { lat: 6.7940, lng: -5.2480, greenLat: 6.7930, greenLng: -5.2462 }, // Center → lake area
-  13: { lat: 6.7926, lng: -5.2455, greenLat: 6.7932, greenLng: -5.2440 }, // Near lake / right
-  14: { lat: 6.7936, lng: -5.2436, greenLat: 6.7960, greenLng: -5.2440 }, // Right side → N
-  15: { lat: 6.7963, lng: -5.2438, greenLat: 6.7984, greenLng: -5.2448 }, // Upper-right
-  16: { lat: 6.7986, lng: -5.2452, greenLat: 6.7986, greenLng: -5.2468 }, // Upper-right → W
-  17: { lat: 6.7980, lng: -5.2470, greenLat: 6.7974, greenLng: -5.2486 }, // Center-right → W
-  18: { lat: 6.7972, lng: -5.2490, greenLat: 6.7971, greenLng: -5.2525 }, // Return to clubhouse
+  1:  { lat: 6.7975, lng: -5.2530, greenLat: 6.7997, greenLng: -5.2526 },
+  2:  { lat: 6.7998, lng: -5.2523, greenLat: 6.8002, greenLng: -5.2513 },
+  3:  { lat: 6.8001, lng: -5.2509, greenLat: 6.7997, greenLng: -5.2497 },
+  4:  { lat: 6.7994, lng: -5.2493, greenLat: 6.7983, greenLng: -5.2480 },
+  5:  { lat: 6.7986, lng: -5.2520, greenLat: 6.7999, greenLng: -5.2517 },
+  6:  { lat: 6.7963, lng: -5.2526, greenLat: 6.7951, greenLng: -5.2512 },
+  7:  { lat: 6.7949, lng: -5.2510, greenLat: 6.7951, greenLng: -5.2493 },
+  8:  { lat: 6.7959, lng: -5.2495, greenLat: 6.7981, greenLng: -5.2495 },
+  9:  { lat: 6.7983, lng: -5.2479, greenLat: 6.7974, greenLng: -5.2458 },
+  10: { lat: 6.7968, lng: -5.2530, greenLat: 6.7955, greenLng: -5.2504 },
+  11: { lat: 6.7953, lng: -5.2499, greenLat: 6.7941, greenLng: -5.2467 },
+  12: { lat: 6.7937, lng: -5.2459, greenLat: 6.7929, greenLng: -5.2443 },
+  13: { lat: 6.7924, lng: -5.2441, greenLat: 6.7934, greenLng: -5.2433 },
+  14: { lat: 6.7937, lng: -5.2432, greenLat: 6.7965, greenLng: -5.2437 },
+  15: { lat: 6.7969, lng: -5.2437, greenLat: 6.7987, greenLng: -5.2445 },
+  16: { lat: 6.7987, lng: -5.2451, greenLat: 6.7986, greenLng: -5.2469 },
+  17: { lat: 6.7983, lng: -5.2473, greenLat: 6.7974, greenLng: -5.2489 },
+  18: { lat: 6.7973, lng: -5.2493, greenLat: 6.7970, greenLng: -5.2526 },
 };
 
 function calculateDistanceMeters(lat1: number, lon1: number, lat2: number, lon2: number) {
