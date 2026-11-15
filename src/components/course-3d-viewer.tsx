@@ -23,6 +23,9 @@ export const Course3DViewer = forwardRef<Course3DViewerRef, Course3DViewerProps>
     const [isFullscreen, setIsFullscreen] = useState(false);
     const annotationsRef = useRef<Array<{ title: string; index: number }>>([]);
 
+    const onAnnotationSelectRef = useRef(onAnnotationSelect);
+    onAnnotationSelectRef.current = onAnnotationSelect;
+
     // Jump to annotation matching a hole number (e.g. "Start Hole #7", "Hole 7", or 0-indexed index)
     const jumpToHole = (holeNum: number) => {
       const api = apiRef.current;
@@ -65,18 +68,23 @@ export const Course3DViewer = forwardRef<Course3DViewerRef, Course3DViewerProps>
       }
     }, [selectedHole, loaded]);
 
-    // Initialize Sketchfab Viewer API
+    // Initialize Sketchfab Viewer API once per modelId
+    const modelId = model?.modelId;
+    const isInitializingRef = useRef(false);
+
     useEffect(() => {
-      if (!model || !iframeRef.current) return;
+      if (!modelId || !iframeRef.current) return;
+      if (apiRef.current || isInitializingRef.current) return; // Prevent multiple client.init calls
 
       let isMounted = true;
+      isInitializingRef.current = true;
 
       function initApi() {
         const Sketchfab = (window as any).Sketchfab;
         if (!Sketchfab || !iframeRef.current) return;
 
         const client = new Sketchfab(iframeRef.current);
-        client.init(model!.modelId, {
+        client.init(modelId, {
           autostart: 1,
           preload: 1,
           ui_hint: 2,
@@ -106,24 +114,25 @@ export const Course3DViewer = forwardRef<Course3DViewerRef, Course3DViewerProps>
 
               // Listen for clicks on 3D annotations
               api.addEventListener("annotationSelect", (index: number) => {
-                if (index >= 0 && onAnnotationSelect) {
+                if (index >= 0 && onAnnotationSelectRef.current) {
                   const item = annotationsRef.current[index];
                   if (item) {
                     const match = item.title.match(/(?:hole|trou)\s*(?:#|n°)?\s*(\d+)/i);
                     if (match) {
                       const num = parseInt(match[1], 10);
-                      onAnnotationSelect(num);
+                      onAnnotationSelectRef.current(num);
                       return;
                     }
                   }
                   // Fallback: index + 1
-                  onAnnotationSelect(index + 1);
+                  onAnnotationSelectRef.current(index + 1);
                 }
               });
             });
           },
           error: () => {
             console.error("Sketchfab Viewer API failed to initialize.");
+            isInitializingRef.current = false;
           },
         });
       }
@@ -147,7 +156,7 @@ export const Course3DViewer = forwardRef<Course3DViewerRef, Course3DViewerProps>
       return () => {
         isMounted = false;
       };
-    }, [model]);
+    }, [modelId]);
 
     const toggleFullscreen = () => {
       if (!box.current) return;
